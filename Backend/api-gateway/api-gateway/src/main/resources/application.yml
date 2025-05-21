@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: contact-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/contact/**
+          filters:
+            - RewritePath=/contact/(?<segment>.*), /${segment}
+
+        - id: content-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/content/**
+          filters:
+            - RewritePath=/content/(?<segment>.*), /${segment}
+
+        - id: auth-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/auth/(?<segment>.*), /${segment}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
